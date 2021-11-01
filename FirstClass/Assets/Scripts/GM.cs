@@ -5,7 +5,9 @@ using UnityEngine;
 public class GM : MonoBehaviour
 {
 
+    public Camera camera;
     public GameObject plane;
+    public GameObject weatherEffect;
 
     public GameObject waypoints;
     private Vector3[] spawnPoints = new Vector3[4];               //Holds spawn points for all 4 walls
@@ -24,7 +26,7 @@ public class GM : MonoBehaviour
         setSpawnWalls();
 
         spawnDelay = 60f / (float) planesPerMinute;
-        Debug.Log("Time in seconds between every plane: " + spawnDelay);
+        //Debug.Log("Time in seconds between every plane: " + spawnDelay);
     }
 
     void setSpawnWalls()
@@ -52,6 +54,33 @@ public class GM : MonoBehaviour
         Instantiate(plane, spawnVector, Quaternion.identity);
     }
 
+
+    void OnMouseDown()
+    {
+        Vector3 clickPosition = -Vector3.one;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if(Physics.Raycast(ray, out hit))
+        {
+            clickPosition = hit.point;
+            Debug.Log(clickPosition);
+            Instantiate(weatherEffect, clickPosition, Quaternion.identity);
+        }
+        /*
+        RaycastHit hit;
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            Transform objectHit = hit.transform;
+            Instantiate(weatherEffect, objectHit.position, Quaternion.identity);
+        }
+        */
+    }
+
+
     // Update is called once per frame
     void Update()
     {
@@ -64,7 +93,7 @@ public class GM : MonoBehaviour
     }
     void SpawnAirplane()
     {
-        Debug.Log("Plane spawned!" + elapsedTime);
+        //Debug.Log("Plane spawned!" + elapsedTime);
         spawn();
     }
 }
