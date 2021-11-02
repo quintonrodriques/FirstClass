@@ -8,8 +8,6 @@ public class NavGrid : MonoBehaviour
 	public Vector2Int gridDimensions;
 	public int extension;
 
-	[Range(0.0f, 1.0f)]
-	public float careFactor = 1.0f;
 	public Obsticle[] obsticles;
 	
 	private static PathNode[,] s_grid;
@@ -112,6 +110,46 @@ public class NavGrid : MonoBehaviour
 					float distance = Vector3.Distance(node.GetWorldPosition(), obsticle.transform.position);
 					node.movementPenalty = (distance <= obsticle.radius) ? Mathf.Clamp(node.movementPenalty + Mathf.RoundToInt((1 - distance / obsticle.radius) * 255 * obsticle.dangerLevel), 0, 255) : node.movementPenalty + 0;
                 }
+			}
+		}
+	}
+
+	public static void RemoveObsticle(Obsticle remove)
+    {
+		s_obsticles.Remove(remove);
+
+		for (int y = 0; y < GetGridLengthY(); y++)
+		{
+			for (int x = 0; x < GetGridLengthX(); x++)
+			{
+				s_grid[x, y].movementPenalty = 0;
+			}
+		}
+
+		foreach (Obsticle obsticle in s_obsticles)
+		{
+			Vector2Int nodeGridPos = GetNodeFromWorldPosition(obsticle.transform.position).GetGridPosition();
+			int effectRadius = Mathf.RoundToInt(obsticle.radius / s_nodeSize);
+
+			for (int y = -effectRadius; y <= effectRadius; y++)
+			{
+				for (int x = -effectRadius; x <= effectRadius; x++)
+				{
+					if (x == 0 && y == 0)
+					{
+						s_grid[nodeGridPos.x, nodeGridPos.y].movementPenalty = 255;
+						continue;
+					}
+
+					Vector2Int gridCheckPos = new Vector2Int(nodeGridPos.x + x, nodeGridPos.y + y);
+					if (gridCheckPos.x >= 0 && gridCheckPos.x < GetGridLengthX() &&
+						gridCheckPos.y >= 0 && gridCheckPos.y < GetGridLengthY())
+					{
+						PathNode node = s_grid[gridCheckPos.x, gridCheckPos.y];
+						float distance = Vector3.Distance(node.GetWorldPosition(), obsticle.transform.position);
+						node.movementPenalty = (distance <= obsticle.radius) ? Mathf.Clamp(node.movementPenalty + Mathf.RoundToInt((1 - distance / obsticle.radius) * 255 * obsticle.dangerLevel), 0, 255) : node.movementPenalty + 0;
+					}
+				}
 			}
 		}
 	}

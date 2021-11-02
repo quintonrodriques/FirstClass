@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7493348373474487573}
   - component: {fileID: 7493348373474487572}
   - component: {fileID: 7493348373474487575}
+  - component: {fileID: -5297616991505227074}
   m_Layer: 0
   m_Name: Weather
   m_TagString: Untagged
@@ -110,3 +111,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeOfEffect: 3
   radiusGrowth: 1
+--- !u!114 &-5297616991505227074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493348373474487574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d41df70d193a89a4f8724b68ff79acf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 2
+  dangerLevel: 1

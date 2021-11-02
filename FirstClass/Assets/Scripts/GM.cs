@@ -14,7 +14,6 @@ public class GM : MonoBehaviour
 
 	private List<PlaneController> airplanePool;
 
-    public Camera camera;
     public GameObject weatherEffect;
 
     void OnMouseDown()
@@ -105,7 +104,7 @@ public class GM : MonoBehaviour
 			if (airplanePool[i].isAvailable)
 				return i;
 		}
-
+		
 		return -1;
 	}
 

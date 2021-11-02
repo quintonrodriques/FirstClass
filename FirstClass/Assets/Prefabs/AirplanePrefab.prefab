@@ -46,9 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAvailable: 0
   flySpeed: 3
-  careFactor: 0.5
-  pathRequestsPerSecond: 1
+  careFactor: 1
+  pathRequestsPerSecond: 6
   proximityThreshold: 0.5
+  travelIndex: 0
 --- !u!1 &9210013394285533064
 GameObject:
   m_ObjectHideFlags: 0
