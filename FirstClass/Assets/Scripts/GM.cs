@@ -14,6 +14,34 @@ public class GM : MonoBehaviour
 
 	private List<PlaneController> airplanePool;
 
+    public Camera camera;
+    public GameObject weatherEffect;
+
+    void OnMouseDown()
+    {
+        Vector3 clickPosition = -Vector3.one;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if(Physics.Raycast(ray, out hit))
+        {
+            clickPosition = hit.point;
+            Debug.Log(clickPosition);
+            Instantiate(weatherEffect, clickPosition, Quaternion.identity);
+        }
+        /*
+        RaycastHit hit;
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            Transform objectHit = hit.transform;
+            Instantiate(weatherEffect, objectHit.position, Quaternion.identity);
+        }
+        */
+    }
+
 	void Start()
 	{
 		airplanePool = new List<PlaneController>();
