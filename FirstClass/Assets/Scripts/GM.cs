@@ -15,41 +15,26 @@ public class GM : MonoBehaviour
 
 	private List<Boid> airplanePool;
 
-    public GameObject weatherEffect;
+	public GameObject weatherEffect;
 
-
+	public static bool mouseOverButton = false;
 	
 
-    void OnMouseDown()
-    {
 
-		Debug.Log("AFS");
+	void OnMouseDown()
+	{
+		/*
+		RaycastHit hit;
+		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 
-		Vector3 clickPosition = -Vector3.one;
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-
-
-        if(Physics.Raycast(ray, out hit))
-        {
-			Debug.Log("Layer: " + hit.transform.gameObject.layer);
-            clickPosition = hit.point;
-            Debug.Log(clickPosition);
-            Instantiate(weatherEffect, clickPosition, Quaternion.identity);
-        }
-        /*
-        RaycastHit hit;
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            Transform objectHit = hit.transform;
-            Instantiate(weatherEffect, objectHit.position, Quaternion.identity);
-        }
-        */
-    }
+		if (Physics.Raycast(ray, out hit))
+		{
+			Transform objectHit = hit.transform;
+			Instantiate(weatherEffect, objectHit.position, Quaternion.identity);
+		}
+		*/
+	}
+	
 
 	void Start()
 	{
@@ -63,7 +48,17 @@ public class GM : MonoBehaviour
 		Debug.Log("Time in seconds between every plane: " + spawnDelay);
 	}
 
-	void setSpawnWalls()
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0) && !mouseOverButton)
+        {
+			Vector3 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			clickPosition.y = 0;
+			Instantiate(weatherEffect, clickPosition, Quaternion.identity);
+		}
+	}
+
+    void setSpawnWalls()
 	{
 		spawnPoints = new Vector3[waypoints.transform.childCount];
 		for (int i = 0; i < spawnPoints.Length; i++)

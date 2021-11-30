@@ -16,7 +16,7 @@ public class WeatherEffect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        NavGrid.AddObsticle(GetComponent<Obsticle>());
+        BoidManager.AddObsticle(GetComponent<Obsticle>());
     }
 
     // Update is called once per frame
@@ -31,7 +31,7 @@ public class WeatherEffect : MonoBehaviour
 
         if (elapsedTime >= timeOfEffect)
         {
-            NavGrid.RemoveObsticle(GetComponent<Obsticle>());
+            BoidManager.RemoveObsticle(GetComponent<Obsticle>());
             Destroy(gameObject);
         }
     }

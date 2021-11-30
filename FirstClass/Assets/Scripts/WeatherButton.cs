@@ -22,9 +22,16 @@ public class WeatherButton : MonoBehaviour
 
     void OnMouseOver()
     {
-        if (Input.GetMouseButton(0)){
+        GM.mouseOverButton = true;
+
+        if (Input.GetMouseButtonDown(0)){
             //Debug.Log("Something was pressed!");
             gM.GetComponent<GM>().weatherEffect = effect;
         }
+    }
+
+    private void OnMouseExit()
+    {
+        GM.mouseOverButton = false;
     }
 }
