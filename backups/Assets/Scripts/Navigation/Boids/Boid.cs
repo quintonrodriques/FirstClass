@@ -34,6 +34,7 @@ public class Boid : MonoBehaviour
 {
 	[HideInInspector]
 	public Vector3 target { get; private set; }
+	public Transform targetTransform;
 	
 	[Header("Airplane Controls")]
 	public float maxSpeed;
@@ -65,7 +66,7 @@ public class Boid : MonoBehaviour
 	{
 		rb.velocity = intial;
 	}
-	public void SetTarget(Vector3 position)
+	void SetTarget(Vector3 position)
 	{
 		target = position;
 	}
@@ -75,22 +76,16 @@ public class Boid : MonoBehaviour
 	public void Init()
 	{
 		rb = GetComponent<Rigidbody>();
+		SetTarget(targetTransform.position);
 
-		isLanding = false;
-		if (landing != null)
-		{
-			StopCoroutine(landing);
-			landing = null;
-		}
-		transform.localScale = Vector3.one;
-		
 		desiredSpeed = maxSpeed;
 		SetInitialVelocity(transform.forward * desiredSpeed);
-		bravery = Random.Range(0.0f, 1.0f);
 	}
 
 	void Start()
 	{
+		SetTarget(targetTransform.position);
+
 		BoidManager.AddBoid(this);
 		
 		Init();
@@ -101,7 +96,7 @@ public class Boid : MonoBehaviour
 		LandingCheck();
 		
 		desiredVelocity = Aim(target);
-		desiredVelocity += Avoidance() * (1.0f - bravery);
+		desiredVelocity += Avoidance() * bravery;
 
 		transform.LookAt(transform.position + rb.velocity);
 	}
@@ -125,11 +120,10 @@ public class Boid : MonoBehaviour
 		if (Vector3.Distance(target, transform.position) <= viewDistance)
 		{
 			isLanding = true;
-			landing = StartCoroutine(Land());
+			StartCoroutine(Land());
 		}
 	}
 
-	Coroutine landing = null;
 	IEnumerator Land()
     {
 		float time = 0;
@@ -143,9 +137,9 @@ public class Boid : MonoBehaviour
 		gameObject.SetActive(false);
     }
 
-    #region Flocking Functions
+	#region Flocking Functions
 
-    Vector3 Aim(Vector3 point)
+	Vector3 Aim(Vector3 point)
 	{
 		Vector3 aim = (point - transform.position).normalized;
 		float desiredAngle = Mathf.Min(180 - (1 + Vector3.Dot(transform.forward, aim)) * 90.0f, maxTurnAngle);
