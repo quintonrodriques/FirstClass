@@ -1,17 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
 public class GM : MonoBehaviour
 {
 
+	private static GM _intstance;
+
 	public GameObject plane;
 	public GameObject waypoints;
+	//public static Text scoreText;
+	public TextMeshProUGUI scoreText;
+
 	public int planesPerMinute = 0;    
 	
 	private Vector3[] spawnPoints;                      //Holds spawn points for all spawn points
 	private Vector3[] spawnVectors = new Vector3[4];    //Holds spawn vector for all 4 walls
 	private bool gameRunning = true;
+
+	public static int totalScore = 0;
 
 	private List<Boid> airplanePool;
 
@@ -19,7 +28,18 @@ public class GM : MonoBehaviour
 
 	public static bool mouseOverButton = false;
 	
+	public static void addScoreToTotal(int score)
+    {
 
+		Debug.Log("+" + score + " added!");
+		GM.totalScore += score;
+		_intstance.scoreText.text = GM.totalScore.ToString();
+	}
+
+	public void addScores(int s)
+    {
+		scoreText.text = s.ToString();
+	}
 
 	void OnMouseDown()
 	{
@@ -43,9 +63,10 @@ public class GM : MonoBehaviour
 		setSpawnWalls();
 
 		float spawnDelay = 60f / planesPerMinute;
-		StartCoroutine(SpawnAirplane(spawnDelay));    
+		StartCoroutine(SpawnAirplane(spawnDelay));
 
-		Debug.Log("Time in seconds between every plane: " + spawnDelay);
+		_intstance = this;
+		//Debug.Log("Time in seconds between every plane: " + spawnDelay);
 	}
 
     void Update()

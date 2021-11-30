@@ -35,6 +35,7 @@ public class Boid : MonoBehaviour
 	[HideInInspector]
 	public Vector3 target { get; private set; }
 	
+
 	[Header("Airplane Controls")]
 	public float maxSpeed;
 	[Range(10, 120)]
@@ -50,10 +51,24 @@ public class Boid : MonoBehaviour
 	[Range(0, 1)]
 	public float bravery = 0.5f;
 
+
+	[Space]
+	[Header("Airplane Controls")]
+	public float maxScore = 100.0f;
+	public float minScore = 20.0f;
+	public float delayTimeForgiveness = 2.0f;
+	public float delayTimeMax= 10.0f;
+
 	// Physics Variables
 	private Rigidbody rb;
 	private Vector3 desiredVelocity;
 	private float desiredSpeed;
+
+	//Score variable;
+	private float timeOfSpawn;
+	private float timeElapsed;
+	private float totalDistance;
+	private float estimatedTimeToFly;
 
 	// Automation Variables
 	[HideInInspector]
@@ -74,6 +89,7 @@ public class Boid : MonoBehaviour
 
 	public void Init()
 	{
+
 		rb = GetComponent<Rigidbody>();
 
 		isLanding = false;
@@ -87,12 +103,18 @@ public class Boid : MonoBehaviour
 		desiredSpeed = maxSpeed;
 		SetInitialVelocity(transform.forward * desiredSpeed);
 		bravery = Random.Range(0.0f, 1.0f);
+
+		//Calculate optimal distance for score
+		timeOfSpawn = Time.time;
+		totalDistance = Vector3.Distance(target, transform.position);
+		estimatedTimeToFly = timeOfSpawn + (totalDistance / maxSpeed); // * Time.deltaTime;
+
 	}
 
 	void Start()
 	{
 		BoidManager.AddBoid(this);
-		
+	
 		Init();
 	}
 
@@ -129,6 +151,11 @@ public class Boid : MonoBehaviour
 		}
 	}
 
+	public void Score(float score)
+    {
+		GM.addScoreToTotal((int)score);
+    }
+
 	Coroutine landing = null;
 	IEnumerator Land()
     {
@@ -140,6 +167,24 @@ public class Boid : MonoBehaviour
 			time += Time.deltaTime;
         }
 
+		float endTime = Time.time;
+		float delayTime = endTime - estimatedTimeToFly;
+
+		Debug.Log("Delay Time: " + delayTime);
+
+        if (delayTime < delayTimeForgiveness)
+        {
+			Score(maxScore);
+		}else if (delayTime > delayTimeForgiveness + delayTimeMax)
+		{
+			Score(minScore);
+        }
+        else
+        {
+			float percentOfScore = (delayTime - delayTimeForgiveness) / delayTimeMax;
+			float endScore = ((maxScore - minScore) * percentOfScore) + minScore;
+			Score(endScore);
+        }
 		gameObject.SetActive(false);
     }
 
