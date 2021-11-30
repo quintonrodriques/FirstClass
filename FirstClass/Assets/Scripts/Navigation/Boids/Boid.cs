@@ -101,7 +101,7 @@ public class Boid : MonoBehaviour
 		LandingCheck();
 		
 		desiredVelocity = Aim(target);
-		desiredVelocity += Avoidance() * (1.0f - bravery);
+		desiredVelocity += Avoidance();
 
 		transform.LookAt(transform.position + rb.velocity);
 	}
