@@ -13,7 +13,7 @@ public class GM : MonoBehaviour
 	private Vector3[] spawnVectors = new Vector3[4];    //Holds spawn vector for all 4 walls
 	private bool gameRunning = true;
 
-	private List<PlaneController> airplanePool;
+	private List<Boid> airplanePool;
 
     public GameObject weatherEffect;
 
@@ -48,7 +48,7 @@ public class GM : MonoBehaviour
 
 	void Start()
 	{
-		airplanePool = new List<PlaneController>();
+		airplanePool = new List<Boid>();
 
 		setSpawnWalls();
 
@@ -83,13 +83,14 @@ public class GM : MonoBehaviour
 		int index = GetAvailableAirplaneIndex();
 		if (index < 0)
 		{
-			airplanePool.Add(Instantiate(plane, Vector3.zero, Quaternion.identity).GetComponent<PlaneController>());
+			airplanePool.Add(Instantiate(plane, Vector3.zero, Quaternion.identity).GetComponent<Boid>());
 			index = airplanePool.Count - 1;
 		}
 		
 		airplanePool[index].transform.position = spawnPosition;
 		airplanePool[index].SetTarget(GetTargetAirport(spawnPosition));
-		airplanePool[index].BeginJourney();
+		airplanePool[index].gameObject.SetActive(true);
+		airplanePool[index].Init();
 	}
 
 	Vector3 GetTargetAirport(Vector3 spawnPosition)
@@ -106,7 +107,7 @@ public class GM : MonoBehaviour
 	{
 		for (int i = 0; i < airplanePool.Count; i++)
 		{
-			if (airplanePool[i].isAvailable)
+			if (!airplanePool[i].gameObject.activeSelf)
 				return i;
 		}
 		
