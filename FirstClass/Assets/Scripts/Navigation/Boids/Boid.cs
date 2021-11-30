@@ -13,6 +13,8 @@ public static class BoidManager
 		obsticles.Add(obsticle);
 	}
 
+	
+
 	public static void RemoveObsticle(Obsticle obsticle)
 	{
 		obsticles.Remove(obsticle);
@@ -93,6 +95,11 @@ public class Boid : MonoBehaviour
 
 	#endregion
 
+	public void OnBraveryChanged(float value)
+	{
+		bravery = value;
+	}
+
 	public void Init()
 	{
 
@@ -120,12 +127,7 @@ public class Boid : MonoBehaviour
 
 	}
 
-    public void OnBraveryChanged(float value)
-    {
-		bravery = value;
-	}
-
-    void Start()
+	void Start()
 	{
 		BoidManager.AddBoid(this);
 		Init();
@@ -136,7 +138,7 @@ public class Boid : MonoBehaviour
 		LandingCheck();
 		
 		desiredVelocity = Aim(target);
-		desiredVelocity += Avoidance() * (1.0f - bravery);
+		desiredVelocity += Avoidance();
 
 		transform.LookAt(transform.position + rb.velocity);
 
@@ -185,7 +187,7 @@ public class Boid : MonoBehaviour
 		float endTime = Time.time;
 		float delayTime = endTime - estimatedTimeToFly;
 
-		Debug.Log("Delay Time: " + delayTime);
+		//Debug.Log("Delay Time: " + delayTime);
 
         if (delayTime < delayTimeForgiveness)
         {
