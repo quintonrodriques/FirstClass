@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GM : MonoBehaviour
 {
@@ -161,4 +162,20 @@ public class GM : MonoBehaviour
 			yield return new WaitForSeconds(timeBetweenSpawns);
 		}
 	}
+
+	public static void GameOver()
+    {
+		if (_intstance.executingGameOver != null)
+			return;
+
+		_intstance.executingGameOver = _intstance.StartCoroutine(_intstance.GameOverSceneChange());
+    }
+
+	Coroutine executingGameOver = null;
+	IEnumerator GameOverSceneChange()
+    {
+		yield return new WaitForSeconds(1.0f);
+		BoidManager.Reset();
+		SceneManager.LoadSceneAsync("IntroScreen");
+    }
 }
