@@ -128,7 +128,6 @@ public class Boid : MonoBehaviour
     void Start()
 	{
 		BoidManager.AddBoid(this);
-	
 		Init();
 	}
 

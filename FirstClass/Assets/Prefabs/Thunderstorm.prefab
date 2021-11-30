@@ -19444,7 +19444,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7493348373474487574}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -19490,8 +19490,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec3a77b2f0f07524daec65dc0557fde8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeOfEffect: 3
-  radiusGrowth: 1
+  timeOfEffect: 5
+  radiusGrowth: 2
   storm1: {fileID: 7698127889533085159}
   storm2: {fileID: 8230962245554643934}
 --- !u!114 &-5297616991505227074

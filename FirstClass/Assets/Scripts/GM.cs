@@ -32,8 +32,14 @@ public class GM : MonoBehaviour
 	public static bool mouseOverButton = false;
 	
 	public static void addScoreToTotal(int score)
+<<<<<<< HEAD
 	{
 		Debug.Log("+" + score + " added!");
+=======
+    {
+
+		//Debug.Log("+" + score + " added!");
+>>>>>>> eac996441c026eb0e92954fd0f7231ee3697987f
 		GM.totalScore += score;
 		_intstance.scoreText.text = GM.totalScore.ToString();
 	}
