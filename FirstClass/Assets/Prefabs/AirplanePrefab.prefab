@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5021826593259191136}
   - component: {fileID: 2760562923912560323}
   - component: {fileID: -4400766476598283415}
+  - component: {fileID: 433939645}
   m_Layer: 0
   m_Name: AirplanePrefab
   m_TagString: Untagged
@@ -52,6 +53,10 @@ MonoBehaviour:
   viewAngle: 270
   bravery: 0.5
   displaySegments: 10
+  maxScore: 100
+  minScore: 20
+  delayTimeForgiveness: 2
+  delayTimeMax: 10
   isLanding: 0
 --- !u!54 &2760562923912560323
 Rigidbody:
@@ -165,6 +170,19 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!135 &433939645
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8291658747719792128}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9210013394285533064
 GameObject:
   m_ObjectHideFlags: 0

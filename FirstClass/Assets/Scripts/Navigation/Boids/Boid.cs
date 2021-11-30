@@ -120,7 +120,12 @@ public class Boid : MonoBehaviour
 
 	}
 
-	void Start()
+    public void OnBraveryChanged(float value)
+    {
+		bravery = value;
+	}
+
+    void Start()
 	{
 		BoidManager.AddBoid(this);
 	
@@ -132,7 +137,7 @@ public class Boid : MonoBehaviour
 		LandingCheck();
 		
 		desiredVelocity = Aim(target);
-		desiredVelocity += Avoidance();
+		desiredVelocity += Avoidance() * (1.0f - bravery);
 
 		transform.LookAt(transform.position + rb.velocity);
 

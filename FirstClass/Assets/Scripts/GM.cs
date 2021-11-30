@@ -6,13 +6,16 @@ using TMPro;
 
 public class GM : MonoBehaviour
 {
-
 	private static GM _intstance;
 
 	public GameObject plane;
 	public GameObject waypoints;
-	//public static Text scoreText;
 	public TextMeshProUGUI scoreText;
+	public Slider braverySlider;
+	public TextMeshProUGUI braveryValueText;
+	public string[] braveryValues;
+
+	private Boid selectedBoid;
 
 	public int planesPerMinute = 0;    
 	
@@ -29,15 +32,14 @@ public class GM : MonoBehaviour
 	public static bool mouseOverButton = false;
 	
 	public static void addScoreToTotal(int score)
-    {
-
+	{
 		Debug.Log("+" + score + " added!");
 		GM.totalScore += score;
 		_intstance.scoreText.text = GM.totalScore.ToString();
 	}
 
 	public void addScores(int s)
-    {
+	{
 		scoreText.text = s.ToString();
 	}
 
@@ -69,17 +71,38 @@ public class GM : MonoBehaviour
 		//Debug.Log("Time in seconds between every plane: " + spawnDelay);
 	}
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0) && !mouseOverButton)
-        {
-			Vector3 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			clickPosition.y = 0;
-			Instantiate(weatherEffect, clickPosition, Quaternion.identity);
+	void Update()
+	{
+		if (selectedBoid == null)
+			braverySlider.onValueChanged.RemoveAllListeners();
+
+		braveryValueText.text = braveryValues[(int)Mathf.Clamp(braverySlider.value * braveryValues.Length, 0, braveryValues.Length - 1)];
+
+		if (Input.GetMouseButtonDown(0) && !mouseOverButton)
+		{
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if (Physics.Raycast(ray, out RaycastHit hit))
+			{
+				selectedBoid = hit.transform.GetComponent<Boid>();
+				if (selectedBoid != null)
+				{
+					braverySlider.value = selectedBoid.bravery;
+					braverySlider.onValueChanged.AddListener(selectedBoid.OnBraveryChanged);
+				}
+			}
+			else
+			{
+				if (!mouseOverButton)
+				{
+					Vector3 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+					clickPosition.y = 0;
+					Instantiate(weatherEffect, clickPosition, Quaternion.identity);
+				}
+			}
 		}
 	}
 
-    void setSpawnWalls()
+	void setSpawnWalls()
 	{
 		spawnPoints = new Vector3[waypoints.transform.childCount];
 		for (int i = 0; i < spawnPoints.Length; i++)
@@ -116,12 +139,7 @@ public class GM : MonoBehaviour
 
 	Vector3 GetTargetAirport(Vector3 spawnPosition)
 	{
-		Vector3 targetPoint;
-		do
-			targetPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-		while (targetPoint.x == spawnPosition.x || targetPoint.z == spawnPosition.z);
-
-		return targetPoint;
+		return -spawnPosition;
 	}
 
 	int GetAvailableAirplaneIndex()
