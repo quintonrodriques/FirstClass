@@ -24,10 +24,14 @@ public class WeatherEffect : MonoBehaviour
     {
         opacity = 1.0f - (elapsedTime / timeOfEffect);
         this.GetComponent<MeshRenderer>().material.color = new Color(95.0f, 190.0f, 255.0f, opacity);
-        //Debug.Log(opacity);
 
         elapsedTime += Time.deltaTime;
-        transform.localScale = new Vector3(1.0f + elapsedTime, 1.1f + elapsedTime, 1.1f + elapsedTime);
+        //transform.localScale = new Vector3(1.0f + elapsedTime, 1.1f + elapsedTime, 1.1f + elapsedTime);
+
+        float percentComplete = ((timeOfEffect - (timeOfEffect - elapsedTime)) / timeOfEffect);
+        float radiusGrowFactor = percentComplete * radiusGrowth;
+
+        transform.localScale = new Vector3(1.0f + radiusGrowFactor, 1.1f + radiusGrowFactor, 1.1f + radiusGrowFactor);
 
         if (elapsedTime >= timeOfEffect)
         {

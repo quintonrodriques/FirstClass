@@ -31,7 +31,7 @@ public class GM : MonoBehaviour
 	public static void addScoreToTotal(int score)
     {
 
-		Debug.Log("+" + score + " added!");
+		//Debug.Log("+" + score + " added!");
 		GM.totalScore += score;
 		_intstance.scoreText.text = GM.totalScore.ToString();
 	}
