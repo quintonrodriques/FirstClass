@@ -108,7 +108,7 @@ public class NavGrid : MonoBehaviour
                 {
 					PathNode node = s_grid[gridCheckPos.x, gridCheckPos.y];
 					float distance = Vector3.Distance(node.GetWorldPosition(), obsticle.transform.position);
-					node.movementPenalty = (distance <= obsticle.radius) ? Mathf.Clamp(node.movementPenalty + Mathf.RoundToInt((1 - distance / obsticle.radius) * 255 * obsticle.dangerLevel), 0, 255) : node.movementPenalty + 0;
+					//node.movementPenalty = (distance <= obsticle.radius) ? Mathf.Clamp(node.movementPenalty + Mathf.RoundToInt((1 - distance / obsticle.radius) * 255 * obsticle.dangerLevel), 0, 255) : node.movementPenalty + 0;
                 }
 			}
 		}
@@ -147,7 +147,7 @@ public class NavGrid : MonoBehaviour
 					{
 						PathNode node = s_grid[gridCheckPos.x, gridCheckPos.y];
 						float distance = Vector3.Distance(node.GetWorldPosition(), obsticle.transform.position);
-						node.movementPenalty = (distance <= obsticle.radius) ? Mathf.Clamp(node.movementPenalty + Mathf.RoundToInt((1 - distance / obsticle.radius) * 255 * obsticle.dangerLevel), 0, 255) : node.movementPenalty + 0;
+						//node.movementPenalty = (distance <= obsticle.radius) ? Mathf.Clamp(node.movementPenalty + Mathf.RoundToInt((1 - distance / obsticle.radius) * 255 * obsticle.dangerLevel), 0, 255) : node.movementPenalty + 0;
 					}
 				}
 			}

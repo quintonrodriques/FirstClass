@@ -3,7 +3,16 @@
 public class Obsticle : MonoBehaviour
 {
     public float radius = 1.0f;
-    public float dangerLevel = 1.0f;
+
+    public void Start()
+    {
+        BoidManager.AddObsticle(this);
+    }
+
+    public void OnDestroy()
+    {
+        BoidManager.RemoveObsticle(this);
+    }
 
     private void OnDrawGizmos()
     {
