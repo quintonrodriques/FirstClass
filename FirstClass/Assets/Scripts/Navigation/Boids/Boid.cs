@@ -299,6 +299,7 @@ public class Boid : MonoBehaviour
 			return;
 
 		// A collision between airplanes just happened
+		GM.GameOver();
 
 		gameObject.SetActive(false);
 	}
