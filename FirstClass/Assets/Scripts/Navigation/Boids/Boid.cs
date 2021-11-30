@@ -95,6 +95,7 @@ public class Boid : MonoBehaviour
 
 	#endregion
 
+
 	public void OnBraveryChanged(float value)
 	{
 		bravery = value;
@@ -138,7 +139,7 @@ public class Boid : MonoBehaviour
 		LandingCheck();
 		
 		desiredVelocity = Aim(target);
-		desiredVelocity += Avoidance();
+		desiredVelocity += Avoidance() * (1 - bravery);
 
 		transform.LookAt(transform.position + rb.velocity);
 
@@ -318,6 +319,8 @@ public class Boid : MonoBehaviour
 
 	#endregion
 
+	#if UNITY_EDITOR
+
 	private void OnDrawGizmos()
 	{
 		// Pilot Variable Visualizers
@@ -348,4 +351,5 @@ public class Boid : MonoBehaviour
 		Gizmos.color = (isLanding) ? Color.green : Color.red;
 		Gizmos.DrawRay(transform.position, rb.velocity);
 	}
+	#endif
 }

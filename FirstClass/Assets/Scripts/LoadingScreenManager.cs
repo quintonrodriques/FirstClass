@@ -12,12 +12,14 @@ public class LoadingScreenManager : MonoBehaviour
 
 
     public bool menuActive;
+    public bool helpActive;
     public Camera mainCam;
 
     // Start is called before the first frame update
     void Start()
     {
         menuActive = false;
+        helpActive = false;
         planeDelay = 60.0f / planesPerMinute;
     }
 
