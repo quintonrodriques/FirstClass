@@ -34,8 +34,8 @@ public class Boid : MonoBehaviour
 {
 	[HideInInspector]
 	public Vector3 target { get; private set; }
+	public Transform targetTransform;
 	
-
 	[Header("Airplane Controls")]
 	public float maxSpeed;
 	[Range(10, 120)]
@@ -51,30 +51,10 @@ public class Boid : MonoBehaviour
 	[Range(0, 1)]
 	public float bravery = 0.5f;
 
-	[Space]
-
-	[Header("Path Display")]
-	public int displaySegments;
-
-	[Space]
-
-	[Header("Scoring System")]
-	public float maxScore = 100.0f;
-	public float minScore = 20.0f;
-	public float delayTimeForgiveness = 2.0f;
-	public float delayTimeMax= 10.0f;
-
 	// Physics Variables
 	private Rigidbody rb;
-	private LineRenderer line;
 	private Vector3 desiredVelocity;
 	private float desiredSpeed;
-
-	//Score variable;
-	private float timeOfSpawn;
-	private float timeElapsed;
-	private float totalDistance;
-	private float estimatedTimeToFly;
 
 	// Automation Variables
 	[HideInInspector]
@@ -86,7 +66,7 @@ public class Boid : MonoBehaviour
 	{
 		rb.velocity = intial;
 	}
-	public void SetTarget(Vector3 position)
+	void SetTarget(Vector3 position)
 	{
 		target = position;
 	}
@@ -95,35 +75,19 @@ public class Boid : MonoBehaviour
 
 	public void Init()
 	{
-
 		rb = GetComponent<Rigidbody>();
-		line = GetComponent<LineRenderer>();
+		SetTarget(targetTransform.position);
 
-		line.positionCount = displaySegments + 1;
-
-		isLanding = false;
-		if (landing != null)
-		{
-			StopCoroutine(landing);
-			landing = null;
-		}
-		transform.localScale = Vector3.one;
-		
 		desiredSpeed = maxSpeed;
 		SetInitialVelocity(transform.forward * desiredSpeed);
-		bravery = Random.Range(0.0f, 1.0f);
-
-		//Calculate optimal distance for score
-		timeOfSpawn = Time.time;
-		totalDistance = Vector3.Distance(target, transform.position);
-		estimatedTimeToFly = timeOfSpawn + (totalDistance / maxSpeed); // * Time.deltaTime;
-
 	}
 
 	void Start()
 	{
+		SetTarget(targetTransform.position);
+
 		BoidManager.AddBoid(this);
-	
+		
 		Init();
 	}
 
@@ -132,11 +96,9 @@ public class Boid : MonoBehaviour
 		LandingCheck();
 		
 		desiredVelocity = Aim(target);
-		desiredVelocity += Avoidance();
+		desiredVelocity += Avoidance() * bravery;
 
 		transform.LookAt(transform.position + rb.velocity);
-
-		EstimatedPathDisplay();
 	}
 
 	void FixedUpdate()
@@ -158,16 +120,10 @@ public class Boid : MonoBehaviour
 		if (Vector3.Distance(target, transform.position) <= viewDistance)
 		{
 			isLanding = true;
-			landing = StartCoroutine(Land());
+			StartCoroutine(Land());
 		}
 	}
 
-	public void Score(float score)
-    {
-		GM.addScoreToTotal((int)score);
-    }
-
-	Coroutine landing = null;
 	IEnumerator Land()
     {
 		float time = 0;
@@ -178,52 +134,12 @@ public class Boid : MonoBehaviour
 			time += Time.deltaTime;
         }
 
-		float endTime = Time.time;
-		float delayTime = endTime - estimatedTimeToFly;
-
-		Debug.Log("Delay Time: " + delayTime);
-
-        if (delayTime < delayTimeForgiveness)
-        {
-			Score(maxScore);
-		}else if (delayTime > delayTimeForgiveness + delayTimeMax)
-		{
-			Score(minScore);
-        }
-        else
-        {
-			float percentOfScore = (delayTime - delayTimeForgiveness) / delayTimeMax;
-			float endScore = ((maxScore - minScore) * percentOfScore) + minScore;
-			Score(endScore);
-        }
 		gameObject.SetActive(false);
     }
 
-	void EstimatedPathDisplay()
-	{
-		Vector3[] displayPoints = new Vector3[displaySegments + 1];
+	#region Flocking Functions
 
-		for (int i = 0; i <= displaySegments; i++)
-		{
-			float t = (float)i / displaySegments;
-
-			Vector3 p1 = transform.position;
-			Vector3 p2 = transform.forward * desiredSpeed * 3.0f + transform.position;
-			Vector3 p3 = target;
-
-			Vector3 lp1 = Vector3.Lerp(p1, p2, t);
-			Vector3 lp2 = Vector3.Lerp(p2, p3, t);
-
-			Vector3 dp = Vector3.Lerp(lp1, lp2, t);
-			displayPoints[i] = dp;
-		}
-
-		line.SetPositions(displayPoints);
-	}
-
-    #region Flocking Functions
-
-    Vector3 Aim(Vector3 point)
+	Vector3 Aim(Vector3 point)
 	{
 		Vector3 aim = (point - transform.position).normalized;
 		float desiredAngle = Mathf.Min(180 - (1 + Vector3.Dot(transform.forward, aim)) * 90.0f, maxTurnAngle);
@@ -285,21 +201,11 @@ public class Boid : MonoBehaviour
 		return avoidance;
 	}
 
-    #endregion
+	#endregion
 
-    private void OnCollisionEnter(Collision collision)
-    {
-		if (!collision.gameObject.GetComponent<Boid>())
-			return;
+	#region Utility Functions
 
-		// A collision between airplanes just happened
-
-		gameObject.SetActive(false);
-	}
-
-    #region Utility Functions
-
-    Vector3 LimitVelocity(Vector3 velocity, float limit)
+	Vector3 LimitVelocity(Vector3 velocity, float limit)
 	{
 		return Vector3.ClampMagnitude(velocity, limit);
 	}

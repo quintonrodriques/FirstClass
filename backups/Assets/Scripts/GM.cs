@@ -1,85 +1,64 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using UnityEngine;
-using TMPro;
 
 public class GM : MonoBehaviour
 {
 
-	private static GM _intstance;
-
 	public GameObject plane;
 	public GameObject waypoints;
-	//public static Text scoreText;
-	public TextMeshProUGUI scoreText;
-
 	public int planesPerMinute = 0;    
 	
 	private Vector3[] spawnPoints;                      //Holds spawn points for all spawn points
 	private Vector3[] spawnVectors = new Vector3[4];    //Holds spawn vector for all 4 walls
 	private bool gameRunning = true;
 
-	public static int totalScore = 0;
+	private List<PlaneController> airplanePool;
 
-	private List<Boid> airplanePool;
+    public GameObject weatherEffect;
 
-	public GameObject weatherEffect;
 
-	public static bool mouseOverButton = false;
 	
-	public static void addScoreToTotal(int score)
+
+    void OnMouseDown()
     {
+        Vector3 clickPosition = -Vector3.one;
 
-		Debug.Log("+" + score + " added!");
-		GM.totalScore += score;
-		_intstance.scoreText.text = GM.totalScore.ToString();
-	}
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
 
-	public void addScores(int s)
-    {
-		scoreText.text = s.ToString();
-	}
+        if(Physics.Raycast(ray, out hit))
+        {
+			Debug.Log("Layer: " + hit.transform.gameObject.layer);
+            clickPosition = hit.point;
+            Debug.Log(clickPosition);
+            Instantiate(weatherEffect, clickPosition, Quaternion.identity);
+        }
+        /*
+        RaycastHit hit;
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 
-	void OnMouseDown()
-	{
-		/*
-		RaycastHit hit;
-		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-
-		if (Physics.Raycast(ray, out hit))
-		{
-			Transform objectHit = hit.transform;
-			Instantiate(weatherEffect, objectHit.position, Quaternion.identity);
-		}
-		*/
-	}
-	
+        if (Physics.Raycast(ray, out hit))
+        {
+            Transform objectHit = hit.transform;
+            Instantiate(weatherEffect, objectHit.position, Quaternion.identity);
+        }
+        */
+    }
 
 	void Start()
 	{
-		airplanePool = new List<Boid>();
+		airplanePool = new List<PlaneController>();
 
 		setSpawnWalls();
 
 		float spawnDelay = 60f / planesPerMinute;
-		StartCoroutine(SpawnAirplane(spawnDelay));
+		StartCoroutine(SpawnAirplane(spawnDelay));    
 
-		_intstance = this;
-		//Debug.Log("Time in seconds between every plane: " + spawnDelay);
+		Debug.Log("Time in seconds between every plane: " + spawnDelay);
 	}
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0) && !mouseOverButton)
-        {
-			Vector3 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			clickPosition.y = 0;
-			Instantiate(weatherEffect, clickPosition, Quaternion.identity);
-		}
-	}
-
-    void setSpawnWalls()
+	void setSpawnWalls()
 	{
 		spawnPoints = new Vector3[waypoints.transform.childCount];
 		for (int i = 0; i < spawnPoints.Length; i++)
@@ -104,14 +83,13 @@ public class GM : MonoBehaviour
 		int index = GetAvailableAirplaneIndex();
 		if (index < 0)
 		{
-			airplanePool.Add(Instantiate(plane, Vector3.zero, Quaternion.identity).GetComponent<Boid>());
+			airplanePool.Add(Instantiate(plane, Vector3.zero, Quaternion.identity).GetComponent<PlaneController>());
 			index = airplanePool.Count - 1;
 		}
 		
 		airplanePool[index].transform.position = spawnPosition;
 		airplanePool[index].SetTarget(GetTargetAirport(spawnPosition));
-		airplanePool[index].gameObject.SetActive(true);
-		airplanePool[index].Init();
+		airplanePool[index].BeginJourney();
 	}
 
 	Vector3 GetTargetAirport(Vector3 spawnPosition)
@@ -128,7 +106,7 @@ public class GM : MonoBehaviour
 	{
 		for (int i = 0; i < airplanePool.Count; i++)
 		{
-			if (!airplanePool[i].gameObject.activeSelf)
+			if (airplanePool[i].isAvailable)
 				return i;
 		}
 		
