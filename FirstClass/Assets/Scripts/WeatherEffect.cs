@@ -6,6 +6,10 @@ public class WeatherEffect : MonoBehaviour
 {
     public float timeOfEffect = 0f;
     public float radiusGrowth = 0f;
+
+    public ParticleSystem storm1;
+    public ParticleSystem storm2;
+
     float elapsedTime = 0f;
     float opacity = 1.0f;
 
