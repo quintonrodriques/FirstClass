@@ -22,10 +22,15 @@ public class GM : MonoBehaviour
 
     void OnMouseDown()
     {
-        Vector3 clickPosition = -Vector3.one;
+
+		Debug.Log("AFS");
+
+		Vector3 clickPosition = -Vector3.one;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
+
+
 
         if(Physics.Raycast(ray, out hit))
         {
