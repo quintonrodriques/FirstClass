@@ -1,30 +1,43 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayButtonHandler : MonoBehaviour
 {
-    public GameObject gM;
+	public LoadingScreenManager gM;
+	public string gameScene;
+	public Image fade;
 
-    private void Start()
+	public void PlayButton()
+	{
+		if (gM.menuActive)
+			return;
+
+		StartCoroutine(PlayButtonAnim());
+	}
+
+	IEnumerator PlayButtonAnim()
     {
-        ///gM = GameObject.Find("LoadingScreenManager");
-    }
+		gM.menuActive = true;
+		gM.setPlane();
 
-    public void PlayButton()
-    {
+		yield return new WaitForSeconds(2.0f);
 
-        //GameObject gM = GameObject.Find("LoadingScreenManager");
-        if (gM.GetComponent<LoadingScreenManager>().menuActive == false)
+		Color fadeOpaque = fade.color;
+		fadeOpaque.a = 1.0f;
+
+		Color fadeTransparent = fade.color;
+		fadeTransparent.a = 0.0f;
+
+		float t = 0;
+		while (t < 1)
         {
-            Debug.Log("Plane incoming");
-            gM.GetComponent<LoadingScreenManager>().menuActive = true;
-            gM.GetComponent<LoadingScreenManager>().setPlane();
-        }
-        else
-        {
-            Debug.Log("Plane reset");
-            gM.GetComponent<LoadingScreenManager>().menuActive = false;
-        }
-    }
+			t = Mathf.Clamp01(t + Time.deltaTime * 5.0f);
+			fade.color = Color.Lerp(fadeTransparent, fadeOpaque, t);
+			yield return null;
+		}
+
+		SceneManager.LoadSceneAsync(gameScene);
+	}
 }

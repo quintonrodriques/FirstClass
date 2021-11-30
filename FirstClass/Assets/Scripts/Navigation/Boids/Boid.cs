@@ -50,8 +50,13 @@ public class Boid : MonoBehaviour
 	[Range(0, 1)]
 	public float bravery = 0.5f;
 
+	[Space]
+	[Header("Path Display")]
+	public int displaySegments;
+
 	// Physics Variables
 	private Rigidbody rb;
+	private LineRenderer line;
 	private Vector3 desiredVelocity;
 	private float desiredSpeed;
 
@@ -75,6 +80,9 @@ public class Boid : MonoBehaviour
 	public void Init()
 	{
 		rb = GetComponent<Rigidbody>();
+		line = GetComponent<LineRenderer>();
+
+		line.positionCount = displaySegments + 1;
 
 		isLanding = false;
 		if (landing != null)
@@ -104,6 +112,8 @@ public class Boid : MonoBehaviour
 		desiredVelocity += Avoidance();
 
 		transform.LookAt(transform.position + rb.velocity);
+
+		EstimatedPathDisplay();
 	}
 
 	void FixedUpdate()
@@ -142,6 +152,28 @@ public class Boid : MonoBehaviour
 
 		gameObject.SetActive(false);
     }
+
+	void EstimatedPathDisplay()
+	{
+		Vector3[] displayPoints = new Vector3[displaySegments + 1];
+
+		for (int i = 0; i <= displaySegments; i++)
+		{
+			float t = (float)i / displaySegments;
+
+			Vector3 p1 = transform.position;
+			Vector3 p2 = transform.forward * desiredSpeed * 3.0f + transform.position;
+			Vector3 p3 = target;
+
+			Vector3 lp1 = Vector3.Lerp(p1, p2, t);
+			Vector3 lp2 = Vector3.Lerp(p2, p3, t);
+
+			Vector3 dp = Vector3.Lerp(lp1, lp2, t);
+			displayPoints[i] = dp;
+		}
+
+		line.SetPositions(displayPoints);
+	}
 
     #region Flocking Functions
 
@@ -207,11 +239,21 @@ public class Boid : MonoBehaviour
 		return avoidance;
 	}
 
-	#endregion
+    #endregion
 
-	#region Utility Functions
+    private void OnCollisionEnter(Collision collision)
+    {
+		if (!collision.gameObject.GetComponent<Boid>())
+			return;
 
-	Vector3 LimitVelocity(Vector3 velocity, float limit)
+		// A collision between airplanes just happened
+
+		gameObject.SetActive(false);
+	}
+
+    #region Utility Functions
+
+    Vector3 LimitVelocity(Vector3 velocity, float limit)
 	{
 		return Vector3.ClampMagnitude(velocity, limit);
 	}
