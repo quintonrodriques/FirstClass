@@ -1,28 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class HelpButtonHandler : MonoBehaviour
 {
-    public GameObject gM;
+    public LoadingScreenManager gM;
+    public GameObject helpText;
 
     private void Start()
     {
         ///gM = GameObject.Find("LoadingScreenManager");
     }
 
-    public void PlayButton()
+
+    IEnumerator HelpButtonAnim()
     {
-        if (gM.GetComponent<LoadingScreenManager>().menuActive == false)
-        {
-            Debug.Log("Plane incoming");
-            gM.GetComponent<LoadingScreenManager>().menuActive = true;
-            gM.GetComponent<LoadingScreenManager>().setPlane();
-        }
-        else
-        {
-            Debug.Log("Plane reset");
-            gM.GetComponent<LoadingScreenManager>().menuActive = false;
-        }
+        gM.helpActive = true;
+        //gM.setPlane();
+
+        yield return new WaitForSeconds(2.0f);
+
+        helpText.SetActive(true);
+
+    }
+
+
+    public void HelpButton()
+    {
+        gM.GetComponent<LoadingScreenManager>().setPlane();
+        helpText.SetActive(true);
     }
 }

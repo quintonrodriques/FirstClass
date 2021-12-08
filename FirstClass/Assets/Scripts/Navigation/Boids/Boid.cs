@@ -13,6 +13,8 @@ public static class BoidManager
 		obsticles.Add(obsticle);
 	}
 
+	
+
 	public static void RemoveObsticle(Obsticle obsticle)
 	{
 		obsticles.Remove(obsticle);
@@ -94,6 +96,12 @@ public class Boid : MonoBehaviour
 
 	#endregion
 
+
+	public void OnBraveryChanged(float value)
+	{
+		bravery = value;
+	}
+
 	public void Init()
 	{
 		rb = GetComponent<Rigidbody>();
@@ -118,11 +126,7 @@ public class Boid : MonoBehaviour
 		timeOfSpawn = Time.time;
 		totalDistance = Vector3.Distance(target, transform.position);
 		estimatedTimeToFly = timeOfSpawn + (totalDistance / maxSpeed); // * Time.deltaTime;
-	}
 
-    public void OnBraveryChanged(float value)
-    {
-		bravery = value;
 	}
 
 	public void SetTangibility(bool isTangible)
@@ -141,7 +145,7 @@ public class Boid : MonoBehaviour
 		LandingCheck();
 		
 		desiredVelocity = Aim(target);
-		desiredVelocity += Avoidance() * (1.0f - bravery);
+		desiredVelocity += Avoidance() * (1 - bravery);
 
 		transform.LookAt(transform.position + rb.velocity);
 
@@ -203,7 +207,7 @@ public class Boid : MonoBehaviour
 		float endTime = Time.time;
 		float delayTime = endTime - estimatedTimeToFly;
 
-		Debug.Log("Delay Time: " + delayTime);
+		//Debug.Log("Delay Time: " + delayTime);
 
         if (delayTime < delayTimeForgiveness)
         {
@@ -331,6 +335,8 @@ public class Boid : MonoBehaviour
 
 	#endregion
 
+	#if UNITY_EDITOR
+
 	private void OnDrawGizmos()
 	{
 		// Pilot Variable Visualizers
@@ -361,4 +367,5 @@ public class Boid : MonoBehaviour
 		Gizmos.color = (isLanding) ? Color.green : Color.red;
 		Gizmos.DrawRay(transform.position, rb.velocity);
 	}
+	#endif
 }
