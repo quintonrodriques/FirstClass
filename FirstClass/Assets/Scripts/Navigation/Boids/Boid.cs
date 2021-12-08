@@ -67,6 +67,7 @@ public class Boid : MonoBehaviour
 	// Physics Variables
 	private Rigidbody rb;
 	private LineRenderer line;
+	private SphereCollider collider;
 	private Vector3 desiredVelocity;
 	private float desiredSpeed;
 
@@ -79,7 +80,7 @@ public class Boid : MonoBehaviour
 	// Automation Variables
 	[HideInInspector]
 	public bool isLanding;
-
+	
 	#region Setters
 
 	void SetInitialVelocity(Vector3 intial)
@@ -95,9 +96,9 @@ public class Boid : MonoBehaviour
 
 	public void Init()
 	{
-
 		rb = GetComponent<Rigidbody>();
 		line = GetComponent<LineRenderer>();
+		collider = GetComponent<SphereCollider>();
 
 		line.positionCount = displaySegments + 1;
 
@@ -117,7 +118,6 @@ public class Boid : MonoBehaviour
 		timeOfSpawn = Time.time;
 		totalDistance = Vector3.Distance(target, transform.position);
 		estimatedTimeToFly = timeOfSpawn + (totalDistance / maxSpeed); // * Time.deltaTime;
-
 	}
 
     public void OnBraveryChanged(float value)
@@ -125,7 +125,12 @@ public class Boid : MonoBehaviour
 		bravery = value;
 	}
 
-    void Start()
+	public void SetTangibility(bool isTangible)
+    {
+		collider.isTrigger = !isTangible;
+    }
+
+	void Start()
 	{
 		BoidManager.AddBoid(this);
 		Init();
@@ -140,8 +145,21 @@ public class Boid : MonoBehaviour
 
 		transform.LookAt(transform.position + rb.velocity);
 
+		SetTangibility(IsInFrustum());
+
 		EstimatedPathDisplay();
 	}
+
+	bool IsInFrustum()
+    {
+		float height = Camera.main.orthographicSize;
+		float width = Camera.main.orthographicSize * Camera.main.aspect;
+
+		print(height);
+		print(width);
+
+		return transform.position.z < height && transform.position.z > -height && transform.position.x < width && transform.position.x > -width;
+    }
 
 	void FixedUpdate()
 	{
@@ -203,6 +221,7 @@ public class Boid : MonoBehaviour
 		gameObject.SetActive(false);
     }
 
+	// Calculates the estimated trajectory of the airplane based off of a squared-bezier curve.
 	void EstimatedPathDisplay()
 	{
 		Vector3[] displayPoints = new Vector3[displaySegments + 1];
@@ -210,16 +229,12 @@ public class Boid : MonoBehaviour
 		for (int i = 0; i <= displaySegments; i++)
 		{
 			float t = (float)i / displaySegments;
+			Vector3 point = transform.forward * desiredSpeed * 3.0f + transform.position;
+			
+			Vector3 lp1 = Vector3.Lerp(transform.position, point, t);
+			Vector3 lp2 = Vector3.Lerp(point, target, t);
 
-			Vector3 p1 = transform.position;
-			Vector3 p2 = transform.forward * desiredSpeed * 3.0f + transform.position;
-			Vector3 p3 = target;
-
-			Vector3 lp1 = Vector3.Lerp(p1, p2, t);
-			Vector3 lp2 = Vector3.Lerp(p2, p3, t);
-
-			Vector3 dp = Vector3.Lerp(lp1, lp2, t);
-			displayPoints[i] = dp;
+			displayPoints[i] = Vector3.Lerp(lp1, lp2, t);
 		}
 
 		line.SetPositions(displayPoints);
