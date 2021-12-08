@@ -9,7 +9,12 @@ public class GM : MonoBehaviour
 {
 	private static GM _intstance;
 
+	public GameObject life1;
+	public GameObject life2;
+	public GameObject life3;
+
 	public GameObject plane;
+	public GameObject explosion;
 	public GameObject waypoints;
 	public TextMeshProUGUI scoreText;
 	public Slider braverySlider;
@@ -18,8 +23,16 @@ public class GM : MonoBehaviour
 
 	private Boid selectedBoid;
 
-	public int planesPerMinute = 0;    
-	
+	public int planesPerMinute = 0;
+	public int maxPlanesPerMinute = 120;
+	public int timeToRamp = 15;
+
+	private int lives = 3;
+	private float invincibilityCooldown = 0.5f;
+	private float timeOfLastKill = 0f;
+
+	private float timeSincelastSpawn;
+
 	private Vector3[] spawnPoints;                      //Holds spawn points for all spawn points
 	private Vector3[] spawnVectors = new Vector3[4];    //Holds spawn vector for all 4 walls
 	private bool gameRunning = true;
@@ -31,10 +44,23 @@ public class GM : MonoBehaviour
 	public GameObject weatherEffect;
 
 	public static bool mouseOverButton = false;
-	
+
+
+	public static void explosionAt(Transform t)
+	{
+		GM.totalScore += 0;
+		_intstance.explode(t);
+	}
+
+	public void explode(Transform t)
+    {
+		GameObject explosionOne = Instantiate(explosion, t.position, Quaternion.identity);
+		DownLife();
+		StartCoroutine(DeleteExplosion(explosionOne));
+	}
+
 	public static void addScoreToTotal(int score)
     {
-		//Debug.Log("+" + score + " added!");
 		GM.totalScore += score;
 		_intstance.scoreText.text = GM.totalScore.ToString();
 	}
@@ -44,24 +70,14 @@ public class GM : MonoBehaviour
 		scoreText.text = s.ToString();
 	}
 
-	void OnMouseDown()
-	{
-		/*
-		RaycastHit hit;
-		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-
-		if (Physics.Raycast(ray, out hit))
-		{
-			Transform objectHit = hit.transform;
-			Instantiate(weatherEffect, objectHit.position, Quaternion.identity);
-		}
-		*/
-	}
 	
 
 	void Start()
 	{
+		lives = 3;
+
 		airplanePool = new List<Boid>();
+		timeSincelastSpawn = Time.time;
 
 		setSpawnWalls();
 
@@ -69,11 +85,22 @@ public class GM : MonoBehaviour
 		StartCoroutine(SpawnAirplane(spawnDelay));
 
 		_intstance = this;
-		//Debug.Log("Time in seconds between every plane: " + spawnDelay);
+
+
+
 	}
 
 	void Update()
 	{
+
+		if(planesPerMinute < maxPlanesPerMinute && Time.time > timeSincelastSpawn)
+        {
+			timeSincelastSpawn = Time.time + timeToRamp;
+			planesPerMinute += 5;
+			float spawnDelay = 60f / planesPerMinute;
+			StartCoroutine(SpawnAirplane(spawnDelay));
+		}
+
 		if (selectedBoid == null)
 			braverySlider.onValueChanged.RemoveAllListeners();
 
@@ -154,6 +181,14 @@ public class GM : MonoBehaviour
 		return -1;
 	}
 
+
+	IEnumerator DeleteExplosion(GameObject g)
+    {
+		yield return new WaitForSeconds(5.0f);
+		Destroy(g);
+
+    }
+
 	IEnumerator SpawnAirplane(float timeBetweenSpawns)
 	{
 		while (gameRunning)
@@ -162,6 +197,33 @@ public class GM : MonoBehaviour
 			yield return new WaitForSeconds(timeBetweenSpawns);
 		}
 	}
+
+	public void DownLife()
+    {
+        if (Time.time > timeOfLastKill)
+        {
+			timeOfLastKill = Time.time + invincibilityCooldown;
+			lives--;
+
+
+			//Debug.Log("Despawn Plane");
+
+			if (lives == 2)
+            {
+				life3.SetActive(false);
+			}
+			if (lives == 1)
+			{
+				life2.SetActive(false);
+			}
+			if (lives == 0)
+			{
+				life1.SetActive(false);
+				GameOver();
+			}
+
+		}
+    }
 
 	public static void GameOver()
     {

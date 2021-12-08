@@ -22,7 +22,7 @@ public class PlayButtonHandler : MonoBehaviour
 		gM.menuActive = true;
 		gM.setPlane();
 
-		yield return new WaitForSeconds(2.0f);
+		yield return new WaitForSeconds(2.5f);
 
 		Color fadeOpaque = fade.color;
 		fadeOpaque.a = 1.0f;

@@ -159,8 +159,8 @@ public class Boid : MonoBehaviour
 		float height = Camera.main.orthographicSize;
 		float width = Camera.main.orthographicSize * Camera.main.aspect;
 
-		print(height);
-		print(width);
+		//print(height);
+		//print(width);
 
 		return transform.position.z < height && transform.position.z > -height && transform.position.x < width && transform.position.x > -width;
     }
@@ -316,8 +316,10 @@ public class Boid : MonoBehaviour
 			return;
 
 		// A collision between airplanes just happened
-		GM.GameOver();
-
+		GM.explosionAt(this.transform);
+		
+		//GM.GameOver();
+		//FIX THIS SHOULD DECREMENT SCORE
 		gameObject.SetActive(false);
 	}
 
