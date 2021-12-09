@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Plane : MonoBehaviour
 {
+
     GameObject spawnPoint;
     GameObject endPoint;
     GameObject trueEnd;
@@ -14,6 +15,7 @@ public class Plane : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         spawnPoint = GameObject.Find("StartPath");
         endPoint = GameObject.Find("EndPath");
 

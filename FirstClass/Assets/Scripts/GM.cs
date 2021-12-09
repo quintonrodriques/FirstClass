@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class GM : MonoBehaviour
 {
 	private static GM _intstance;
+	private AudioSource explosion1;
 
 	public GameObject life1;
 	public GameObject life2;
@@ -78,6 +79,9 @@ public class GM : MonoBehaviour
 
 		airplanePool = new List<Boid>();
 		timeSincelastSpawn = Time.time;
+
+
+		explosion1 = GetComponent<AudioSource>();
 
 		setSpawnWalls();
 
@@ -204,6 +208,7 @@ public class GM : MonoBehaviour
         {
 			timeOfLastKill = Time.time + invincibilityCooldown;
 			lives--;
+			explosion1.Play();
 
 
 			//Debug.Log("Despawn Plane");

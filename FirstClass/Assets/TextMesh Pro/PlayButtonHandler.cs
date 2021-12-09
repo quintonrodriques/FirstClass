@@ -11,6 +11,10 @@ public class PlayButtonHandler : MonoBehaviour
 
 	public void PlayButton()
 	{
+        if (Time.timeSinceLevelLoad < 1.0f)
+        {
+			return;
+        }
 		if (gM.menuActive)
 			return;
 

@@ -10,13 +10,17 @@ public class WeatherEffect : MonoBehaviour
     public ParticleSystem storm1;
     public ParticleSystem storm2;
 
+    private AudioSource source;
+
     float elapsedTime = 0f;
     float opacity = 1.0f;
 
     // Start is called before the first frame update
     void Start()
     {
+        source = GetComponent<AudioSource>();
         BoidManager.AddObsticle(GetComponent<Obsticle>());
+        source.Play();
     }
 
     // Update is called once per frame

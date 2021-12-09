@@ -2155,7 +2155,7 @@ MonoBehaviour:
   - RECKLESS
   planesPerMinute: 10
   maxPlanesPerMinute: 150
-  timeToRamp: 15
+  timeToRamp: 30
   weatherEffect: {fileID: 7493348373474487574, guid: 6ccca682b3942cd4c8e09a7907004df4, type: 3}
 --- !u!1 &1285908292
 GameObject:

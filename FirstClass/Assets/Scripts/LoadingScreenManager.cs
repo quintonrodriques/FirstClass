@@ -11,6 +11,8 @@ public class LoadingScreenManager : MonoBehaviour
     float planeDelay;
 
 
+    private AudioSource clickSound;
+
     public bool menuActive;
     public bool helpActive;
     public Camera mainCam;
@@ -18,6 +20,7 @@ public class LoadingScreenManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        clickSound = GetComponent<AudioSource>();
         menuActive = false;
         helpActive = false;
         planeDelay = 60.0f / planesPerMinute;
@@ -27,6 +30,8 @@ public class LoadingScreenManager : MonoBehaviour
     {
         GameObject[] planes;
         planes = GameObject.FindGameObjectsWithTag("Plane");
+
+        clickSound.Play();
 
         List<GameObject> planesInView = new List<GameObject>();
         foreach (GameObject planeX in planes)
