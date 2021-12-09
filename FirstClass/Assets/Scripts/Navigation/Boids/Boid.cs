@@ -69,9 +69,8 @@ public class Boid : MonoBehaviour
 	[Space]
 
 	[Header("Visualization")]
-	public GameObject outline;
 	public MeshRenderer airplane;
-	public Material colour;
+	public Material material;
 
 	// Physics Variables
 	private Rigidbody rb;
@@ -90,6 +89,7 @@ public class Boid : MonoBehaviour
 	[HideInInspector]
 	public bool isLanding;
 	private static int braveryShaderID = -1;
+	private static int outlineShaderID = -1;
 
 	#region Setters
 
@@ -145,14 +145,16 @@ public class Boid : MonoBehaviour
 
 	public void SetOutline(bool useOutline)
     {
-		outline.SetActive(useOutline);
-    }
+		airplane.material.SetFloat(outlineShaderID, useOutline ? 1.0f : 0.0f);
+	}
 
 	void Start()
 	{
-		airplane.material = new Material(colour);
+		airplane.material = new Material(material);
 		if (braveryShaderID < 0)
 			braveryShaderID = Shader.PropertyToID("_Bravery");
+		if (outlineShaderID < 0)
+			outlineShaderID = Shader.PropertyToID("_EnableOutline");
 
 		BoidManager.AddBoid(this);
 		Init();

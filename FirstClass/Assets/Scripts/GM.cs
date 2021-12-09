@@ -10,10 +10,8 @@ public class GM : MonoBehaviour
 	private static GM _intstance;
 	private AudioSource explosion1;
 
-	public GameObject life1;
-	public GameObject life2;
-	public GameObject life3;
-
+	public GameObject[] lifeGraphics;
+	
 	public GameObject plane;
 	public GameObject explosion;
 	public GameObject waypoints;
@@ -46,6 +44,7 @@ public class GM : MonoBehaviour
 
 	public static bool mouseOverButton = false;
 
+	public GameObject sliderUI;
 
 	public static void explosionAt(Transform t)
 	{
@@ -71,15 +70,12 @@ public class GM : MonoBehaviour
 		scoreText.text = s.ToString();
 	}
 
-	
-
 	void Start()
 	{
 		lives = 3;
 
 		airplanePool = new List<Boid>();
 		timeSincelastSpawn = Time.time;
-
 
 		explosion1 = GetComponent<AudioSource>();
 
@@ -90,12 +86,14 @@ public class GM : MonoBehaviour
 
 		_intstance = this;
 
-
-
+		EnableRiskLevelUI(false);
 	}
 
 	void Update()
 	{
+		if (selectedBoid != null && selectedBoid.isLanding)
+			ResetSelectedAirplane();
+		
 		braveryValueText.text = braveryValues[(int)Mathf.Clamp(braverySlider.value * braveryValues.Length, 0, braveryValues.Length - 1)];
 
 		if (Input.GetMouseButtonDown(0) && !mouseOverButton)
@@ -115,6 +113,8 @@ public class GM : MonoBehaviour
 
 					braverySlider.value = selectedBoid.bravery;
 					braverySlider.onValueChanged.AddListener(selectedBoid.OnBraveryChanged);
+					
+					EnableRiskLevelUI(true);
 				}
 			}
 			else
@@ -128,6 +128,18 @@ public class GM : MonoBehaviour
 			}
 		}
 	}
+
+	void ResetSelectedAirplane()
+    {
+		braverySlider.onValueChanged.RemoveAllListeners();
+		selectedBoid = null;
+		EnableRiskLevelUI(false);
+	}
+
+	void EnableRiskLevelUI(bool enable)
+    {
+		sliderUI.SetActive(enable);
+    }
 
 	void setSpawnWalls()
 	{
@@ -205,23 +217,11 @@ public class GM : MonoBehaviour
 			lives--;
 			explosion1.Play();
 
-
-			//Debug.Log("Despawn Plane");
-
-			if (lives == 2)
-            {
-				life3.SetActive(false);
-			}
-			if (lives == 1)
-			{
-				life2.SetActive(false);
-			}
-			if (lives == 0)
-			{
-				life1.SetActive(false);
+			lifeGraphics[lives].SetActive(false);
+			if (lives <= 0)
 				GameOver();
-			}
-
+		
+			ResetSelectedAirplane();
 		}
     }
 

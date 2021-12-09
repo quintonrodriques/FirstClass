@@ -2139,9 +2139,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfc9ac2f2237ed842a60f6e286f23722, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  life1: {fileID: 410736124}
-  life2: {fileID: 1694133416}
-  life3: {fileID: 1058646346}
+  lifeGraphics:
+  - {fileID: 1058646346}
+  - {fileID: 1694133416}
+  - {fileID: 410736124}
   plane: {fileID: 8291658747719792128, guid: 83168610a1314f4429989e891ab5ec27, type: 3}
   explosion: {fileID: 100010, guid: 645413a00f7bd0242bbd6d0e5eb6f439, type: 3}
   waypoints: {fileID: 251651256}
@@ -2158,6 +2159,7 @@ MonoBehaviour:
   maxPlanesPerMinute: 150
   timeToRamp: 30
   weatherEffect: {fileID: 7493348373474487574, guid: 6ccca682b3942cd4c8e09a7907004df4, type: 3}
+  sliderUI: {fileID: 215604211}
 --- !u!82 &1168804347
 AudioSource:
   m_ObjectHideFlags: 0
