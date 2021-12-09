@@ -66,10 +66,17 @@ public class Boid : MonoBehaviour
 	public float delayTimeForgiveness = 2.0f;
 	public float delayTimeMax= 10.0f;
 
+	[Space]
+
+	[Header("Visualization")]
+	public GameObject outline;
+	public MeshRenderer airplane;
+	public Material colour;
+
 	// Physics Variables
 	private Rigidbody rb;
 	private LineRenderer line;
-	private SphereCollider collider;
+	private new SphereCollider collider;
 	private Vector3 desiredVelocity;
 	private float desiredSpeed;
 
@@ -82,7 +89,8 @@ public class Boid : MonoBehaviour
 	// Automation Variables
 	[HideInInspector]
 	public bool isLanding;
-	
+	private static int braveryShaderID = -1;
+
 	#region Setters
 
 	void SetInitialVelocity(Vector3 intial)
@@ -96,10 +104,10 @@ public class Boid : MonoBehaviour
 
 	#endregion
 
-
 	public void OnBraveryChanged(float value)
 	{
 		bravery = value;
+		airplane.material.SetFloat(braveryShaderID, value);
 	}
 
 	public void Init()
@@ -109,6 +117,7 @@ public class Boid : MonoBehaviour
 		collider = GetComponent<SphereCollider>();
 
 		line.positionCount = displaySegments + 1;
+		SetOutline(false);
 
 		isLanding = false;
 		if (landing != null)
@@ -120,8 +129,8 @@ public class Boid : MonoBehaviour
 		
 		desiredSpeed = maxSpeed;
 		SetInitialVelocity(transform.forward * desiredSpeed);
-		bravery = Random.Range(0.0f, 1.0f);
-
+		OnBraveryChanged(Random.Range(0.0f, 1.0f));
+		
 		//Calculate optimal distance for score
 		timeOfSpawn = Time.time;
 		totalDistance = Vector3.Distance(target, transform.position);
@@ -134,8 +143,17 @@ public class Boid : MonoBehaviour
 		collider.isTrigger = !isTangible;
     }
 
+	public void SetOutline(bool useOutline)
+    {
+		outline.SetActive(useOutline);
+    }
+
 	void Start()
 	{
+		airplane.material = new Material(colour);
+		if (braveryShaderID < 0)
+			braveryShaderID = Shader.PropertyToID("_Bravery");
+
 		BoidManager.AddBoid(this);
 		Init();
 	}
@@ -143,15 +161,24 @@ public class Boid : MonoBehaviour
 	void Update()
 	{
 		LandingCheck();
-		
+	
+		SetTangibility(IsInFrustum());
 		desiredVelocity = Aim(target);
 		desiredVelocity += Avoidance() * (1 - bravery);
 
-		transform.LookAt(transform.position + rb.velocity);
-
-		SetTangibility(IsInFrustum());
-
 		EstimatedPathDisplay();
+		transform.LookAt(transform.position + rb.velocity);
+	}
+
+	void FixedUpdate()
+	{
+		Vector3 newVelocity = (rb.velocity + desiredVelocity).normalized;
+
+		float desiredAngle = Mathf.Min(180 - (1 + Vector3.Dot(transform.forward, newVelocity)) * 90.0f, maxTurnAngle);
+		Vector3 side = Mathf.Sign(Vector3.Dot(transform.right, newVelocity)) * transform.right;
+		newVelocity = DirectionFromAngle(transform.forward, side, desiredAngle) * desiredSpeed;
+
+		rb.velocity = LimitVelocity(newVelocity, desiredSpeed);
 	}
 
 	bool IsInFrustum()
@@ -164,17 +191,6 @@ public class Boid : MonoBehaviour
 
 		return transform.position.z < height && transform.position.z > -height && transform.position.x < width && transform.position.x > -width;
     }
-
-	void FixedUpdate()
-	{
-		Vector3 newVelocity = (rb.velocity + desiredVelocity).normalized;
-
-		float desiredAngle = Mathf.Min(180 - (1 + Vector3.Dot(transform.forward, newVelocity)) * 90.0f, maxTurnAngle);
-		Vector3 side = Mathf.Sign(Vector3.Dot(transform.right, newVelocity)) * transform.right;
-		newVelocity = DirectionFromAngle(transform.forward, side, desiredAngle) * desiredSpeed;
-
-		rb.velocity = LimitVelocity(newVelocity, desiredSpeed);
-	}
 
 	void LandingCheck()
 	{

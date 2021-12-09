@@ -96,18 +96,6 @@ public class GM : MonoBehaviour
 
 	void Update()
 	{
-
-		if(planesPerMinute < maxPlanesPerMinute && Time.time > timeSincelastSpawn)
-        {
-			timeSincelastSpawn = Time.time + timeToRamp;
-			planesPerMinute += 5;
-			float spawnDelay = 60f / planesPerMinute;
-			StartCoroutine(SpawnAirplane(spawnDelay));
-		}
-
-		if (selectedBoid == null)
-			braverySlider.onValueChanged.RemoveAllListeners();
-
 		braveryValueText.text = braveryValues[(int)Mathf.Clamp(braverySlider.value * braveryValues.Length, 0, braveryValues.Length - 1)];
 
 		if (Input.GetMouseButtonDown(0) && !mouseOverButton)
@@ -115,9 +103,16 @@ public class GM : MonoBehaviour
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out RaycastHit hit))
 			{
+				braverySlider.onValueChanged.RemoveAllListeners();
+
+				if (selectedBoid != null)
+					selectedBoid.SetOutline(false);
+
 				selectedBoid = hit.transform.GetComponent<Boid>();
 				if (selectedBoid != null)
 				{
+					selectedBoid.SetOutline(true);
+
 					braverySlider.value = selectedBoid.bravery;
 					braverySlider.onValueChanged.AddListener(selectedBoid.OnBraveryChanged);
 				}
