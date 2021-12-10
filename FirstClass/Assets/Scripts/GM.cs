@@ -73,6 +73,7 @@ public class GM : MonoBehaviour
 	void Start()
 	{
 		lives = 3;
+		totalScore = 0;
 
 		airplanePool = new List<Boid>();
 		timeSincelastSpawn = Time.time;
@@ -197,8 +198,7 @@ public class GM : MonoBehaviour
     {
 		yield return new WaitForSeconds(5.0f);
 		Destroy(g);
-
-    }
+	}
 
 	IEnumerator SpawnAirplane(float timeBetweenSpawns)
 	{
