@@ -30,8 +30,6 @@ public class GM : MonoBehaviour
 	private float invincibilityCooldown = 0.5f;
 	private float timeOfLastKill = 0f;
 
-	private float timeSincelastSpawn;
-
 	private Vector3[] spawnPoints;                      //Holds spawn points for all spawn points
 	private Vector3[] spawnVectors = new Vector3[4];    //Holds spawn vector for all 4 walls
 	private bool gameRunning = true;
@@ -39,7 +37,6 @@ public class GM : MonoBehaviour
 	public static int totalScore = 0;
 
 	private List<Boid> airplanePool;
-
 	public GameObject weatherEffect;
 
 	public static bool mouseOverButton = false;
@@ -48,7 +45,7 @@ public class GM : MonoBehaviour
 
 	public static void explosionAt(Transform t)
 	{
-		GM.totalScore += 0;
+		totalScore += 0;
 		_intstance.explode(t);
 	}
 
@@ -61,8 +58,8 @@ public class GM : MonoBehaviour
 
 	public static void addScoreToTotal(int score)
     {
-		GM.totalScore += score;
-		_intstance.scoreText.text = GM.totalScore.ToString();
+		totalScore += score;
+		_intstance.scoreText.text = totalScore.ToString();
 	}
 
 	public void addScores(int s)
@@ -76,14 +73,12 @@ public class GM : MonoBehaviour
 		totalScore = 0;
 
 		airplanePool = new List<Boid>();
-		timeSincelastSpawn = Time.time;
-
 		explosion1 = GetComponent<AudioSource>();
 
 		setSpawnWalls();
 
-		float spawnDelay = 60f / planesPerMinute;
-		StartCoroutine(SpawnAirplane(spawnDelay));
+		StartCoroutine(Ramp());
+		StartCoroutine(SpawnAirplane());
 
 		_intstance = this;
 
@@ -200,12 +195,22 @@ public class GM : MonoBehaviour
 		Destroy(g);
 	}
 
-	IEnumerator SpawnAirplane(float timeBetweenSpawns)
+	IEnumerator Ramp()
+    {
+		while (planesPerMinute < maxPlanesPerMinute)
+        {
+			yield return new WaitForSeconds(timeToRamp);
+			planesPerMinute += 3;
+		}
+	}
+
+	IEnumerator SpawnAirplane()
 	{
 		while (gameRunning)
 		{
 			spawn();
-			yield return new WaitForSeconds(timeBetweenSpawns);
+			float spawnDelay = 60f / planesPerMinute;
+			yield return new WaitForSeconds(spawnDelay);
 		}
 	}
 
@@ -220,7 +225,7 @@ public class GM : MonoBehaviour
 			lifeGraphics[lives].SetActive(false);
 			if (lives <= 0)
 				GameOver();
-		
+			
 			ResetSelectedAirplane();
 		}
     }

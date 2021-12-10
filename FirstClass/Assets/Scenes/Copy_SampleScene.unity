@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2156,7 +2156,7 @@ MonoBehaviour:
   - BRAVE
   - RECKLESS
   planesPerMinute: 10
-  maxPlanesPerMinute: 150
+  maxPlanesPerMinute: 60
   timeToRamp: 30
   weatherEffect: {fileID: 7493348373474487574, guid: 6ccca682b3942cd4c8e09a7907004df4, type: 3}
   sliderUI: {fileID: 215604211}
